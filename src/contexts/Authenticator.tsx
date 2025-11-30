@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { api } from "@/lib/apli-client";
+import { api } from "@/lib/api-client";
 import {
   getAccessToken,
   setAccessToken,

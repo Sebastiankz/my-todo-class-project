@@ -1,4 +1,4 @@
-import { api } from "@/lib/apli-client";
+import { api } from "@/lib/api-client";
 import config from "@/config";
 import type { RegisterCredentials } from "@/types/auth";
 
