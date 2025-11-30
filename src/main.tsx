@@ -18,11 +18,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     replaysOnErrorSampleRate: 1.0, // 100% cuando hay error
     environment: import.meta.env.MODE, // 'development' o 'production'
   });
-  console.log('✅ Sentry initialized successfully');
-} else {
-  console.warn('⚠️ Sentry DSN not found in environment variables');
 }
-
 createRoot(document.getElementById('root')!).render(
   <App />
 )
