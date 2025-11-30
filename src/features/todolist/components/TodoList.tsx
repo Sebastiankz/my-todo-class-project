@@ -1,96 +1,32 @@
-import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useTodo } from "../hooks/useTodo";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import type { TodoType } from "../types";
 import TodoItem from "./TodoItem";
+import TodoForm from "./TodoForm";
 
 export default function TodoList() {
-  const [todo, setTodo] = useState("");
-  const [error, setError] = useState("");
-  const { todos, addTodo, toggleDone, updateTodo, removeTodo } = useTodo();
+  const { todos, addTodo, toggleDone, updateTodo, removeTodo, loading } =
+    useTodo();
   const { user } = useAuth();
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setTodo(value);
-    setError("");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (todo.trim() === "") {
-      setError("Please enter a task");
-      return;
-    }
-
-    if (!user) {
-      setError("User not authenticated");
-      return;
-    }
-
-    if (!user.id) {
-      setError("User ID not found");
-      console.error("User object:", user);
-      return;
-    }
-
-    try {
-      const now = new Date().toISOString();
-      const value: TodoType = {
-        content: todo,
-        done: false,
-        user_id: user.id,
-        createdAt: now,
-        updatedAt: now,
-      };
-      await addTodo(value);
-      setTodo("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add task");
-      console.error("Error adding todo:", err);
-    }
-  };
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            My Tasks
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">My Tasks</h1>
           <p className="text-gray-600">
             Organize your day and boost your productivity
           </p>
         </div>
 
-        {/* Add Task Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <form onSubmit={handleSubmit} className="flex gap-3">
-            <div className="flex-1">
-              <input
-                type="text"
-                name="todo"
-                value={todo}
-                onChange={onChange}
-                placeholder="Add a new task..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-600 focus:border-transparent transition-all outline-none"
-              />
-              {error && (
-                <p className="text-red-500 text-sm mt-2">{error}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-lg transition-all shadow-lg shadow-violet-600/30 hover:shadow-xl hover:shadow-violet-600/40 flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Add
-            </button>
-          </form>
+        {/* Add Task Form */}
+        <div className="mb-6">
+          <TodoForm onAddTodo={addTodo} userId={user.id} />
         </div>
 
         {/* Tasks List Card */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Pencil, Trash2, Check, X } from "lucide-react";
 import type { TodoType } from "../types";
 
@@ -9,12 +9,7 @@ interface TodoItemProps {
   removeTodo: (id: string) => void;
 }
 
-export default function TodoItem({
-  todo,
-  toggleDone,
-  updateTodo,
-  removeTodo,
-}: TodoItemProps) {
+function TodoItem({ todo, toggleDone, updateTodo, removeTodo }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(todo.content);
 
@@ -76,9 +71,7 @@ export default function TodoItem({
           <div>
             <p
               className={`font-medium ${
-                todo.done
-                  ? "line-through text-gray-400"
-                  : "text-gray-800"
+                todo.done ? "line-through text-gray-400" : "text-gray-800"
               }`}
             >
               {todo.content}
@@ -135,3 +128,5 @@ export default function TodoItem({
     </div>
   );
 }
+
+export default memo(TodoItem);

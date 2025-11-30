@@ -1,6 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import { api } from "@/lib/apli-client";
-import { getToken, setToken, clearToken } from "@/lib/auth";
+import {
+  getAccessToken,
+  setAccessToken,
+  setRefreshToken,
+  clearTokens,
+} from "@/lib/auth";
 import config from "@/config";
 import type {
   User,
@@ -45,20 +50,19 @@ export const AuthenticatorProvider = ({
       }
     );
 
-    console.log("Login response:", data);
-    setToken(data.accessToken);
-    
+    setAccessToken(data.accessToken);
+    setRefreshToken(data.refreshToken);
+
     // Normalizar los datos del usuario
-    const userData = data.user as any;
+    const userData = data.user;
     const normalizedUser: User = {
-      id: userData.sub || userData.id || userData._id,
+      id: userData.id,
       email: userData.email,
       name: userData.name || userData.email,
       role: userData.role,
       avatarUrl: userData.avatarUrl || null,
     };
-    
-    console.log("Normalized user on login:", normalizedUser);
+
     setUser(normalizedUser);
     setIsAuthenticated(true);
   };
@@ -72,11 +76,11 @@ export const AuthenticatorProvider = ({
 
   const logout = async () => {
     try {
-      await api.post(`${config.API_AUTHENTICATION_URL}/logout`);
-    } catch (error) {
-      console.error("Logout error:", error);
+      await api.post(`${config.API_AUTHENTICATION_URL}/logout`, null);
+    } catch {
+      // Error silencioso en logout
     } finally {
-      clearToken();
+      clearTokens();
       setUser(null);
       setIsAuthenticated(false);
     }
@@ -84,7 +88,7 @@ export const AuthenticatorProvider = ({
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = getToken();
+      const token = getAccessToken();
 
       if (!token) {
         setLoading(false);
@@ -92,28 +96,28 @@ export const AuthenticatorProvider = ({
       }
 
       try {
-        const response = await api.get<any>(
+        const response = await api.get<{ data: User }>(
           `${config.API_AUTHENTICATION_URL}/verify-token`
         );
-        console.log("Verified user data:", response);
-        
-        // La respuesta tiene una estructura anidada: { valid: true, user: {...} }
-        const userData = response.user || response;
-        
+
+        // La respuesta viene en response.data
+        const userData = response.data;
+
         // Mapear el campo 'sub' a 'id' para consistencia
         const normalizedUser: User = {
-          id: userData.sub || userData.id || userData._id,
+          id: userData.id,
           email: userData.email,
-          name: userData.name || userData.dbName || userData.email,
+          name: userData.name,
           role: userData.role,
           avatarUrl: userData.avatarUrl || null,
         };
-        
-        console.log("Normalized user:", normalizedUser);
+
         setUser(normalizedUser);
         setIsAuthenticated(true);
       } catch {
-        clearToken();
+        // El refresh se maneja automáticamente en apli-client.ts
+        // Si llega aquí, significa que falló todo (incluyendo el refresh)
+        clearTokens();
         setIsAuthenticated(false);
       } finally {
         setLoading(false);

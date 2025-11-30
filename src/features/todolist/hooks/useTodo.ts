@@ -5,31 +5,47 @@ import type { TodoType } from "../types";
 
 export const useTodo = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   const addTodo = async (todo: TodoType) => {
+    setLoading(true);
+    setError(null);
     try {
       const data = await todoApi.createTodo(todo);
       if (data.inserted?.length > 0) {
-        setTodos([...todos, data.inserted[0]]);
+        setTodos((prevTodos) => [...prevTodos, data.inserted[0]]);
       }
-    } catch (error) {
-      console.error("Error adding todo:", error);
-      throw error;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to add todo";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const removeTodo = async (id: string) => {
+    setLoading(true);
+    setError(null);
     try {
       await todoApi.deleteTodo(id);
-      setTodos(todos.filter((todo) => todo._id !== id));
-    } catch (error) {
-      console.error("Error removing todo:", error);
-      throw error;
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete todo";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const toggleDone = async (id: string, currentDoneStatus: boolean) => {
+    setLoading(true);
+    setError(null);
     try {
       const updatedAt = new Date().toISOString();
       await todoApi.updateTodo(id, {
@@ -37,18 +53,26 @@ export const useTodo = () => {
         updatedAt,
       });
 
-      setTodos(
-        todos.map((todo) =>
-          todo._id === id ? { ...todo, done: !currentDoneStatus, updatedAt } : todo
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo._id === id
+            ? { ...todo, done: !currentDoneStatus, updatedAt }
+            : todo
         )
       );
-    } catch (error) {
-      console.error("Error toggling todo:", error);
-      throw error;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update todo";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateTodo = async (id: string, content: string) => {
+    setLoading(true);
+    setError(null);
     try {
       const updatedAt = new Date().toISOString();
       await todoApi.updateTodo(id, {
@@ -56,14 +80,18 @@ export const useTodo = () => {
         updatedAt,
       });
 
-      setTodos(
-        todos.map((todo) =>
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
           todo._id === id ? { ...todo, content, updatedAt } : todo
         )
       );
-    } catch (error) {
-      console.error("Error updating todo:", error);
-      throw error;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update todo";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,17 +99,22 @@ export const useTodo = () => {
     const fetchTodos = async () => {
       if (!user?.id) return;
 
+      setLoading(true);
+      setError(null);
       try {
         const data = await todoApi.getTodos(user.id);
         setTodos(data);
-      } catch (error) {
-        console.error("Error fetching todos:", error);
-        throw error;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to fetch todos";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTodos();
   }, [user?.id]);
 
-  return { todos, addTodo, removeTodo, toggleDone, updateTodo };
+  return { todos, addTodo, removeTodo, toggleDone, updateTodo, loading, error };
 };
