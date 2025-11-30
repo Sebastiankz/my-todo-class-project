@@ -1,71 +1,92 @@
-import { createContext, useEffect, useState }from "react";
-import axios from "axios";
-import config from "../config";
+import { createContext, useEffect, useState } from "react";
+import { api } from "@/lib/apli-client";
+import { getToken, setToken, clearToken } from "@/lib/auth";
+import config from "@/config";
+import type { User, LoginResponse, AuthContextType } from "@/types/auth";
 
-export const AuthenticatorContext = createContext({
-    isAuthenticated: false,
-    login: ({ email, password }: { email: string, password: string }) => { },
-    logout: () => { },
-    loading: true
-});
-
-
-export const AuthenticatorProvider = ({ children }: { children: React.ReactNode }) => {
-    const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    const login = ({ email, password }: { email: string, password: string }) => {
-        axios.post(config.API_AUTHENTICATION_URL + "/login", {
-            email,
-            password
-        })
-        .then(response => {
-            setIsAuthenticated(true);
-            localStorage.setItem("token", response.data.accessToken);
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    };
-
-    const logout = async () => {
-        setIsAuthenticated(false);
-        await axios.post(config.API_AUTHENTICATION_URL + '/logout', null, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
-        localStorage.removeItem("token");
-    }
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setIsAuthenticated(false);
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const res = await axios.get(config.API_AUTHENTICATION_URL + "/verify-token", {
-                    headers: { Authorization: `Bearer ${token}` },
-                    validateStatus: (status) => status < 500
-                });
-                
-                setIsAuthenticated(res.status === 200);
-            } catch (error) {
-                console.error('Error verifying token:', error);
-                setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
-            }
-        };
-        checkAuth();
-    }, []);
-    
-    return (
-        <AuthenticatorContext.Provider value={{ isAuthenticated, login, logout, loading }}>
-            {children}
-        </AuthenticatorContext.Provider>
-    );
+const defaultContextValue: AuthContextType = {
+  isAuthenticated: false,
+  user: null,
+  login: async () => {},
+  logout: async () => {},
+  loading: true,
 };
 
+export const AuthenticatorContext =
+  createContext<AuthContextType>(defaultContextValue);
+
+export const AuthenticatorProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    const data = await api.post<LoginResponse>(
+      `${config.API_AUTHENTICATION_URL}/login`,
+      {
+        email,
+        password,
+      }
+    );
+
+    setToken(data.accessToken);
+    setUser(data.user);
+    setIsAuthenticated(true);
+  };
+
+  const logout = async () => {
+    try {
+      await api.post(`${config.API_AUTHENTICATION_URL}/logout`);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      clearToken();
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = getToken();
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userData = await api.get<User>(
+          `${config.API_AUTHENTICATION_URL}/verify-token`
+        );
+        setUser(userData);
+        setIsAuthenticated(true);
+      } catch {
+        clearToken();
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  return (
+    <AuthenticatorContext.Provider
+      value={{ isAuthenticated, user, login, logout, loading }}
+    >
+      {children}
+    </AuthenticatorContext.Provider>
+  );
+};
