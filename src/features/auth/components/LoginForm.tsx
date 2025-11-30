@@ -36,7 +36,7 @@ export default function LoginForm() {
     <div className="w-full max-w-md mx-auto">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">
-          Welcome Back
+          Welcome sebas Back
         </h1>
         <p className="text-gray-500">
           Hey, welcome back to your special place
