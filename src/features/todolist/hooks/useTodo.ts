@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { todoApi } from "../api";
 import type { TodoType } from "../types";
 
 export const useTodo = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
+  const { user } = useAuth();
 
   const addTodo = async (todo: TodoType) => {
     try {
@@ -48,8 +50,10 @@ export const useTodo = () => {
 
   useEffect(() => {
     const fetchTodos = async () => {
+      if (!user?.id) return;
+
       try {
-        const data = await todoApi.getTodos();
+        const data = await todoApi.getTodos(user.id);
         setTodos(data);
       } catch (error) {
         console.error("Error fetching todos:", error);
@@ -58,7 +62,7 @@ export const useTodo = () => {
     };
 
     fetchTodos();
-  }, []);
+  }, [user?.id]);
 
   return { todos, addTodo, removeTodo, markAsDone };
 };

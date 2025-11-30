@@ -2,6 +2,7 @@ export interface TodoType {
   _id?: string;
   content: string;
   done: boolean;
+  user_id: string;
   createdAt: string;
   updatedAt: string;
 }

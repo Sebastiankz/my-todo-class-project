@@ -3,9 +3,12 @@ import config from "@/config";
 import type { TodoType, CreateTodoResponse } from "../types";
 
 export const todoApi = {
-  getTodos: () => {
+  getTodos: (userId: string) => {
     return api.get<TodoType[]>(`${config.API_DATABASE_URL}/read`, {
-      params: { tableName: "Items" },
+      params: { 
+        tableName: "Items",
+        user_id: userId
+      },
     });
   },
 

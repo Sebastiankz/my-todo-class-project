@@ -2,12 +2,18 @@ import { createContext, useEffect, useState } from "react";
 import { api } from "@/lib/apli-client";
 import { getToken, setToken, clearToken } from "@/lib/auth";
 import config from "@/config";
-import type { User, LoginResponse, AuthContextType } from "@/types/auth";
+import type {
+  User,
+  LoginResponse,
+  AuthContextType,
+  RegisterCredentials,
+} from "@/types/auth";
 
 const defaultContextValue: AuthContextType = {
   isAuthenticated: false,
   user: null,
   login: async () => {},
+  register: async () => {},
   logout: async () => {},
   loading: true,
 };
@@ -42,6 +48,13 @@ export const AuthenticatorProvider = ({
     setToken(data.accessToken);
     setUser(data.user);
     setIsAuthenticated(true);
+  };
+
+  const register = async (credentials: RegisterCredentials) => {
+    await api.post(
+      `${config.API_AUTHENTICATION_URL}/signup-direct`,
+      credentials
+    );
   };
 
   const logout = async () => {
@@ -84,7 +97,7 @@ export const AuthenticatorProvider = ({
 
   return (
     <AuthenticatorContext.Provider
-      value={{ isAuthenticated, user, login, logout, loading }}
+      value={{ isAuthenticated, user, login, register, logout, loading }}
     >
       {children}
     </AuthenticatorContext.Provider>

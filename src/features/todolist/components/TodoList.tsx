@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTodo } from "../hooks/useTodo";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { TodoType } from "../types";
 import TodoItem from "./TodoItem";
 import { Button, Input, TodoTable } from "./styled.tsx";
@@ -7,6 +8,7 @@ import { Button, Input, TodoTable } from "./styled.tsx";
 export default function TodoList() {
   const [todo, setTodo] = useState("");
   const { todos, addTodo, markAsDone, removeTodo } = useTodo();
+  const { user } = useAuth();
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -14,11 +16,12 @@ export default function TodoList() {
   };
 
   const onClick = () => {
-    if (todo === "") return;
+    if (todo === "" || !user?.id) return;
     const now = new Date().toISOString();
     const value: TodoType = {
       content: todo,
       done: false,
+      user_id: user.id,
       createdAt: now,
       updatedAt: now,
     };
