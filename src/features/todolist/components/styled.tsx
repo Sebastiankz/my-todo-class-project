@@ -5,6 +5,7 @@ export const TodoTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
+
 export const TodoCol = styled.td`
   text-align: center;
 `;

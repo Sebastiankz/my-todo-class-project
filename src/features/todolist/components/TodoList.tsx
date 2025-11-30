@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useTodo } from "@/features/todolist/hooks/useTodo";
-import type { TodoType } from "@/features/todolist/types";
-import TodoItem from "./todo-item";
-import { Button, Input, TodoTable } from "./styled";
+import { useTodo } from "../hooks/useTodo";
+import type { TodoType } from "../types";
+import TodoItem from "./TodoItem";
+import { Button, Input, TodoTable } from "./styled.tsx";
 
-function Todo() {
+export default function TodoList() {
   const [todo, setTodo] = useState("");
   const { todos, addTodo, markAsDone, removeTodo } = useTodo();
 
@@ -28,7 +28,7 @@ function Todo() {
 
   return (
     <>
-      <h1>To do list</h1>
+      <h2>To do list</h2>
       <form>
         <div>
           <Input type="text" name="todo" value={todo} onChange={onChange} />
@@ -66,5 +66,3 @@ function Todo() {
     </>
   );
 }
-
-export default Todo;

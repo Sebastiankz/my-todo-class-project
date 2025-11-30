@@ -1,14 +1,16 @@
-
 import "./App.css";
-import { AuthenticatorProvider } from "./contexts/Authenticator";
-import Root from "./pages/root";
+import { BrowserRouter } from "react-router-dom";
+import { AuthenticatorProvider } from "@/contexts/Authenticator";
+import AppRoutes from "@/routes";
 
 function App() {
   return (
     <AuthenticatorProvider>
-      <Root />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </AuthenticatorProvider>
-  )
+  );
 }
 
-export default App
+export default App;

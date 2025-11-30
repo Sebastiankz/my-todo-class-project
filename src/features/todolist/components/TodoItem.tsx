@@ -1,22 +1,25 @@
-import type { TodoType } from "@/features/todolist/types";
-
+import type { TodoType } from "../types";
 import { Check, TodoCol } from "./styled";
 
-const TodoItem = ({
-  todo,
-  markAsDone,
-  removeTodo,
-}: {
+interface TodoItemProps {
   todo: TodoType;
   markAsDone: (id: string) => void;
   removeTodo: (id: string) => void;
-}) => {
+}
+
+export default function TodoItem({
+  todo,
+  markAsDone,
+  removeTodo,
+}: TodoItemProps) {
   const handleDelete = () => {
-    removeTodo(todo._id);
+    removeTodo(todo._id!);
   };
+
   const handleDone = () => {
-    markAsDone(todo._id);
+    markAsDone(todo._id!);
   };
+
   return (
     <tr>
       <TodoCol>
@@ -30,6 +33,4 @@ const TodoItem = ({
       </TodoCol>
     </tr>
   );
-};
-
-export default TodoItem;
+}

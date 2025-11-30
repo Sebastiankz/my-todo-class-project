@@ -1,8 +1,10 @@
-import { useState, useContext } from "react";
-import { AuthenticatorContext } from "@/contexts/Authenticator";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
-const Login = () => {
-  const { login } = useContext(AuthenticatorContext);
+export default function LoginForm() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -21,6 +23,7 @@ const Login = () => {
 
     try {
       await login({ email, password });
+      navigate("/");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Login failed");
     } finally {
@@ -58,6 +61,4 @@ const Login = () => {
       {message && <div>{message}</div>}
     </div>
   );
-};
-
-export default Login;
+}
