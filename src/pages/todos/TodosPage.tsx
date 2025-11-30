@@ -3,10 +3,11 @@ import { LogoutButton } from "@/features/auth";
 
 export default function TodosPage() {
   return (
-    <div>
-      <h1>My Todos</h1>
+    <div className="relative">
+      <div className="absolute top-4 right-4 z-10">
+        <LogoutButton />
+      </div>
       <TodoList />
-      <LogoutButton />
     </div>
   );
 }

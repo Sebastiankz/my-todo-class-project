@@ -29,21 +29,40 @@ export const useTodo = () => {
     }
   };
 
-  const markAsDone = async (id: string) => {
+  const toggleDone = async (id: string, currentDoneStatus: boolean) => {
     try {
       const updatedAt = new Date().toISOString();
       await todoApi.updateTodo(id, {
-        done: true,
+        done: !currentDoneStatus,
         updatedAt,
       });
 
       setTodos(
         todos.map((todo) =>
-          todo._id === id ? { ...todo, done: true, updatedAt } : todo
+          todo._id === id ? { ...todo, done: !currentDoneStatus, updatedAt } : todo
         )
       );
     } catch (error) {
-      console.error("Error marking todo as done:", error);
+      console.error("Error toggling todo:", error);
+      throw error;
+    }
+  };
+
+  const updateTodo = async (id: string, content: string) => {
+    try {
+      const updatedAt = new Date().toISOString();
+      await todoApi.updateTodo(id, {
+        content,
+        updatedAt,
+      });
+
+      setTodos(
+        todos.map((todo) =>
+          todo._id === id ? { ...todo, content, updatedAt } : todo
+        )
+      );
+    } catch (error) {
+      console.error("Error updating todo:", error);
       throw error;
     }
   };
@@ -64,5 +83,5 @@ export const useTodo = () => {
     fetchTodos();
   }, [user?.id]);
 
-  return { todos, addTodo, removeTodo, markAsDone };
+  return { todos, addTodo, removeTodo, toggleDone, updateTodo };
 };

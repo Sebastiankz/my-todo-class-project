@@ -45,8 +45,21 @@ export const AuthenticatorProvider = ({
       }
     );
 
+    console.log("Login response:", data);
     setToken(data.accessToken);
-    setUser(data.user);
+    
+    // Normalizar los datos del usuario
+    const userData = data.user as any;
+    const normalizedUser: User = {
+      id: userData.sub || userData.id || userData._id,
+      email: userData.email,
+      name: userData.name || userData.email,
+      role: userData.role,
+      avatarUrl: userData.avatarUrl || null,
+    };
+    
+    console.log("Normalized user on login:", normalizedUser);
+    setUser(normalizedUser);
     setIsAuthenticated(true);
   };
 
@@ -79,10 +92,25 @@ export const AuthenticatorProvider = ({
       }
 
       try {
-        const userData = await api.get<User>(
+        const response = await api.get<any>(
           `${config.API_AUTHENTICATION_URL}/verify-token`
         );
-        setUser(userData);
+        console.log("Verified user data:", response);
+        
+        // La respuesta tiene una estructura anidada: { valid: true, user: {...} }
+        const userData = response.user || response;
+        
+        // Mapear el campo 'sub' a 'id' para consistencia
+        const normalizedUser: User = {
+          id: userData.sub || userData.id || userData._id,
+          email: userData.email,
+          name: userData.name || userData.dbName || userData.email,
+          role: userData.role,
+          avatarUrl: userData.avatarUrl || null,
+        };
+        
+        console.log("Normalized user:", normalizedUser);
+        setUser(normalizedUser);
         setIsAuthenticated(true);
       } catch {
         clearToken();
