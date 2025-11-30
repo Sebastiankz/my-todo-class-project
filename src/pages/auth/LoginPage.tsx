@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { LoginForm } from "@/features/auth";
-import {ErrorButton} from "@/components/SentryTestButton";
+import { SentryTestButton } from "@/components/SentryTestButton";
 
 export default function LoginPage() {
   return (
@@ -9,6 +9,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white">
         <div className="w-full max-w-md">
           <LoginForm />
+          <SentryTestButton />
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{" "}
@@ -18,7 +19,6 @@ export default function LoginPage() {
               >
                 Sign up here
               </Link>
-              <ErrorButton />
             </p>
           </div>
         </div>
