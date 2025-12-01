@@ -1,5 +1,7 @@
 # React + TypeScript + Vite + Jest
 
+## Members: Sebastian Olivo and Jhonatan Romero
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 ## Sentry Error Tracking Verification
@@ -38,6 +40,34 @@ This project has Sentry integrated for error monitoring and tracking. To verify 
 - Error Boundary configured in `src/App.tsx`
 - Source maps enabled for production builds
 - Environment variables configured in CI/CD pipeline
+
+## Google Analytics Verification
+
+This project has Google Analytics 4 (GA4) integrated for tracking user behavior and application analytics.
+
+### How to Verify Google Analytics
+
+#### Using Google Analytics Debugger Extension
+
+1. Install the Chrome extension: [Google Analytics Debugger](https://chrome.google.com/webstore/detail/google-analytics-debugger/)
+2. Visit the deployed application at: https://todo-list-4e562.web.app
+3. Open Chrome DevTools (F12) and go to the Console tab
+4. Enable the Google Analytics Debugger extension (click the extension icon)
+5. Refresh the page
+6. You will see detailed Google Analytics logs in the console showing:
+   - GA4 initialization
+   - Page view events
+   - Custom events (login, register, todo operations)
+
+![Google Analytics Working](./docs/images/google_analytics.png)
+
+### What is Being Tracked
+
+- Page views on every route change
+- User authentication events (login, register, logout)
+- Todo operations (create, update, delete, toggle)
+- Custom events with categories and labels
+- User engagement metrics
 
 Currently, two official plugins are available:
 
