@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { trackAuth } from "@/lib/analytics";
 
 export default function LogoutButton() {
   const { logout } = useAuth();
@@ -8,6 +9,7 @@ export default function LogoutButton() {
 
   const handleLogout = async () => {
     await logout();
+    trackAuth('logout');
     navigate("/login");
   };
 

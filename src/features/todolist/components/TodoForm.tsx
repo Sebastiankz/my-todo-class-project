@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import type { TodoType } from "../types";
+import { trackTodo } from "@/lib/analytics";
 
 interface TodoFormProps {
   onAddTodo: (todo: TodoType) => Promise<void>;
@@ -32,6 +33,7 @@ export default function TodoForm({ onAddTodo, userId }: TodoFormProps) {
         updatedAt: now,
       };
       await onAddTodo(value);
+      trackTodo('create');
       setTodo("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add task");

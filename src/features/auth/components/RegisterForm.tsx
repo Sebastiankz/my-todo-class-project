@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { trackAuth } from "@/lib/analytics";
 
 export default function RegisterForm() {
   const { register } = useAuth();
@@ -24,6 +25,7 @@ export default function RegisterForm() {
 
     try {
       await register({ email, password, name });
+      trackAuth('register');
       setMessage("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {

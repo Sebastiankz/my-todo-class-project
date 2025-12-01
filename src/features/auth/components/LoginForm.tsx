@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { trackAuth } from "@/lib/analytics";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -23,6 +24,7 @@ export default function LoginForm() {
 
     try {
       await login({ email, password });
+      trackAuth('login');
       navigate("/");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Login failed");

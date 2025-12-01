@@ -1,6 +1,7 @@
 import { useState, memo } from "react";
 import { Pencil, Trash2, Check, X } from "lucide-react";
 import type { TodoType } from "../types";
+import { trackTodo } from "@/lib/analytics";
 
 interface TodoItemProps {
   todo: TodoType;
@@ -15,10 +16,12 @@ function TodoItem({ todo, toggleDone, updateTodo, removeTodo }: TodoItemProps) {
 
   const handleDelete = () => {
     removeTodo(todo._id!);
+    trackTodo('delete');
   };
 
   const handleToggleDone = () => {
     toggleDone(todo._id!, todo.done);
+    trackTodo('toggle');
   };
 
   const handleEdit = () => {
@@ -29,6 +32,7 @@ function TodoItem({ todo, toggleDone, updateTodo, removeTodo }: TodoItemProps) {
   const handleSave = () => {
     if (editedContent.trim() !== "") {
       updateTodo(todo._id!, editedContent);
+      trackTodo('update');
       setIsEditing(false);
     }
   };
