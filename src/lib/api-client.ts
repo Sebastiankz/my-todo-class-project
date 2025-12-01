@@ -13,7 +13,6 @@ type RequestOptions = {
   params?: Record<string, string | number | boolean>;
 };
 
-// Helper para construir URLs con query params
 function buildUrl(endpoint: string, params?: RequestOptions["params"]): string {
   const url = new URL(endpoint, API_BASE_URL || window.location.origin);
 
@@ -28,11 +27,9 @@ function buildUrl(endpoint: string, params?: RequestOptions["params"]): string {
   return url.toString();
 }
 
-// Variable para evitar múltiples refreshes simultáneos
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;
 
-// Función para refrescar el token
 async function refreshAccessToken(): Promise<string> {
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
@@ -68,7 +65,7 @@ async function refreshAccessToken(): Promise<string> {
       return data.accessToken;
     } catch (error) {
       clearTokens();
-      // Solo redirigir si estamos en una página protegida
+
       if (
         window.location.pathname !== "/login" &&
         window.location.pathname !== "/register"
@@ -85,7 +82,6 @@ async function refreshAccessToken(): Promise<string> {
   return refreshPromise;
 }
 
-// Función base para hacer peticiones
 async function request<T>(
   endpoint: string,
   method: string,
@@ -99,13 +95,11 @@ async function request<T>(
     ...options?.headers,
   };
 
-  // Agregar token si existe
   const token = getAccessToken();
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  // Solo agregar Content-Type si no es FormData
   if (!isFormData && body) {
     headers["Content-Type"] = "application/json";
   }
@@ -116,11 +110,15 @@ async function request<T>(
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
 
-  // Si recibimos 401 y no es un retry, intentar refrescar el token
-  if (response.status === 401 && !isRetry) {
+  const isAuthEndpoint =
+    endpoint.includes("/login") ||
+    endpoint.includes("/signup") ||
+    endpoint.includes("/register");
+
+  if (response.status === 401 && !isRetry && !isAuthEndpoint) {
     try {
       await refreshAccessToken();
-      // Reintentar la petición original con el nuevo token
+
       return request<T>(endpoint, method, body, options, true);
     } catch {
       throw new Error("Session expired. Please login again.");
@@ -137,7 +135,6 @@ async function request<T>(
   return response.json();
 }
 
-// API client simple
 export const api = {
   get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
     return request<T>(endpoint, "GET", undefined, options);
