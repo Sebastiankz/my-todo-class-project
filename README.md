@@ -41,6 +41,10 @@ This project has Sentry integrated for error monitoring and tracking. To verify 
 - Source maps enabled for production builds
 - Environment variables configured in CI/CD pipeline
 
+### Sentry Working!!!
+
+![Sentry](./docs/images/sentry.png)
+
 ## Google Analytics Verification
 
 This project has Google Analytics 4 (GA4) integrated for tracking user behavior and application analytics.
