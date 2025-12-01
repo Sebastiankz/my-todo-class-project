@@ -1,20 +1,20 @@
-import ReactGA from 'react-ga4';
+import ReactGA from "react-ga4";
 
 /**
  * Inicializa Google Analytics
  */
 export const initGA = () => {
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-  
+
   if (measurementId) {
     ReactGA.initialize(measurementId, {
       gaOptions: {
-        debug_mode: import.meta.env.MODE === 'development',
+        debug_mode: import.meta.env.MODE === "development",
       },
     });
-    console.log('✅ Google Analytics initialized with ID:', measurementId);
+    console.log("✅ Google Analytics initialized with ID:", measurementId);
   } else {
-    console.warn('⚠️ Google Analytics Measurement ID not found');
+    console.warn("⚠️ Google Analytics Measurement ID not found");
   }
 };
 
@@ -22,10 +22,10 @@ export const initGA = () => {
  * Trackea una vista de página
  */
 export const trackPageView = (path: string, title?: string) => {
-  ReactGA.send({ 
-    hitType: 'pageview', 
+  ReactGA.send({
+    hitType: "pageview",
     page: path,
-    title: title || document.title
+    title: title || document.title,
   });
 };
 
@@ -49,15 +49,15 @@ export const trackEvent = (
 /**
  * Trackea eventos de autenticación
  */
-export const trackAuth = (action: 'login' | 'register' | 'logout') => {
-  trackEvent('User', action, `User ${action}`);
+export const trackAuth = (action: "login" | "register" | "logout") => {
+  trackEvent("User", action, `User ${action}`);
 };
 
 /**
  * Trackea eventos de todos
  */
 export const trackTodo = (
-  action: 'create' | 'update' | 'delete' | 'toggle'
+  action: "create" | "update" | "delete" | "toggle"
 ) => {
-  trackEvent('Todo', action, `Todo ${action}`);
+  trackEvent("Todo", action, `Todo ${action}`);
 };

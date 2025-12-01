@@ -1,11 +1,14 @@
-import { createRoot } from 'react-dom/client'
-import * as Sentry from '@sentry/react'
-import { initGA } from './lib/analytics'
-import App from './App.tsx'
+import { createRoot } from "react-dom/client";
+import * as Sentry from "@sentry/react";
+import { initGA } from "./lib/analytics";
+import App from "./App.tsx";
 
 // Inicializar Sentry
 if (import.meta.env.VITE_SENTRY_DSN) {
-  console.log('🔧 Initializing Sentry with DSN:', import.meta.env.VITE_SENTRY_DSN);
+  console.log(
+    "🔧 Initializing Sentry with DSN:",
+    import.meta.env.VITE_SENTRY_DSN
+  );
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
@@ -24,6 +27,4 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 // Inicializar Google Analytics
 initGA();
 
-createRoot(document.getElementById('root')!).render(
-  <App />
-)
+createRoot(document.getElementById("root")!).render(<App />);
