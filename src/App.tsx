@@ -1,14 +1,28 @@
 import "./App.css";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import * as Sentry from "@sentry/react";
+import { useEffect } from "react";
 import { AuthenticatorProvider } from "@/contexts/Authenticator";
 import AppRoutes from "@/routes";
+import { trackPageView } from "@/lib/analytics";
+
+// Componente para trackear cambios de ruta
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+}
 
 function App() {
   return (
     <Sentry.ErrorBoundary fallback={<ErrorFallback />} showDialog>
       <AuthenticatorProvider>
         <BrowserRouter>
+          <AnalyticsTracker />
           <AppRoutes />
         </BrowserRouter>
       </AuthenticatorProvider>

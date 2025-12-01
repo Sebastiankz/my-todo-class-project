@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
+import { initGA } from './lib/analytics'
 import App from './App.tsx'
 
 // Inicializar Sentry
@@ -19,6 +20,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     environment: import.meta.env.MODE, // 'development' o 'production'
   });
 }
+
+// Inicializar Google Analytics
+initGA();
+
 createRoot(document.getElementById('root')!).render(
   <App />
 )
